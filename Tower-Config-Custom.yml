@@ -1,0 +1,6 @@
+---
+- name: Configure Ansible Tower Demo
+  hosts: 
+    - custom
+  roles:
+    - tower

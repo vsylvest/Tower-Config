@@ -1,0 +1,82 @@
+
+
+- name: Post license key
+  uri:
+    url: https://localhost/api/v2/config/
+    method: POST
+    user: admin
+    password: "{{ towerpass }}"
+    body: "{{ lookup('file','tower_license.json') }}"
+    body_format: json
+    validate_certs: False
+
+ 
+- name: Add Subscription to RHEL
+  redhat_subscription:
+    state: present
+    username: "{{ subscription_user }}" 
+    password: "{{ subscription_pass }}" 
+    auto_attach: true
+
+- name: Enable RHSCL repository
+  rhsm_repository:
+    name: rhel-server-rhscl-7-rpms
+ 
+- name: install pip
+  yum:
+    name: python27-python-pip
+    state: present
+    
+- name: Copy Tower Module File
+  get_url: 
+    url: https://raw.githubusercontent.com/vsylvest/Tower-Config/master/roles/tower/files/Install-Modules
+    dest: /home/student1/install_modules.sh
+    owner: awx
+    group: awx
+    mode: 0755 
+    
+- name: Install Modules
+  shell: /home/student1/./install_modules.sh
+    
+- name: Copy Tower Config File
+  get_url: 
+    url: https://raw.githubusercontent.com/vsylvest/Tower-Config/master/roles/tower/files/Config_Tower
+    dest: /home/student1/configure_tower.sh
+    owner: awx
+    group: awx
+    mode: 0755 
+
+
+- name: Get ServiceNow Credential Injector
+  get_url: 
+    url: https://raw.githubusercontent.com/vsylvest/Tower-Config/master/roles/tower/files/ServiceNow_Cred_Inject.yml
+    dest: /home/student1/ServiceNow_Cred_Inject.yml
+    owner: awx
+    group: awx
+    mode: 0755 
+    
+- name: Get ServiceNow Credential Input
+  get_url: 
+    url: https://raw.githubusercontent.com/vsylvest/Tower-Config/master/roles/tower/files/ServiceNow_Cred_Input.yml
+    dest: /home/student1/ServiceNow_Cred_Input.yml
+    owner: awx
+    group: awx
+    mode: 0755 
+
+
+- name: place private ssh key file
+  get_url: 
+    url: https://raw.githubusercontent.com/vsylvest/Tower-Config/master/roles/tower/files/windows-key
+    dest: /var/lib/awx/venv/ansible/id_rsa
+    owner: awx
+    group: awx
+    mode: 0400 
+
+
+- name: place private ssh key file
+  get_url: 
+    url: https://raw.githubusercontent.com/vsylvest/Tower-Config/master/roles/tower/files/windows-key-pub
+    dest: /var/lib/awx/venv/ansible/id_rsa.pub
+    owner: awx
+    group: awx
+    mode: 0400 

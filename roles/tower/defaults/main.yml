@@ -1,0 +1,7 @@
+---
+# defaults file for tower
+towerversion: 3.2.5
+rabbitpass: redhat
+pgpass: redhat
+towerchk: undefined
+towerpass: ansible

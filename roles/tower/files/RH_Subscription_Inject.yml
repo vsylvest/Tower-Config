@@ -1,0 +1,3 @@
+extra_vars:
+  subscription_pass: '{{ password }}'
+  subscription_user: '{{ username }}'
