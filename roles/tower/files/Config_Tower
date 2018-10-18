@@ -1,62 +1,29 @@
+. /var/lib/awx/venv/ansible/bin/activate
 tower-cli config username admin
 tower-cli config password ansible
 
 
 # Add Projects
-tower-cli project create --name Networks --scm-type git --scm-url https://github.com/vsylvest/Network-BackupRestore.git --organization Default
-tower-cli project create --name ServiceNow --scm-type git --scm-url https://github.com/vsylvest/Ansible-Snow.git --organization Default
-tower-cli project create --name Windows --scm-type git --scm-url https://github.com/vsylvest/Windows.git --organization Default
-tower-cli project create --name Triple-Linux --scm-type git --scm-url https://github.com/vsylvest/Triple-Linux-Patch.git --organization Default
-
-
-tower-cli credential_type create -n ServiceNow --inputs @/home/student1/ServiceNow_Cred_Input.yml --injectors @/home/student1/ServiceNow_Cred_Inject.yml --kind cloud
+tower-cli project create --name Networks --scm-type git --scm-url https://github.com/vsylvest/Network-BackupRestore.git --organization Default --scm-update-on-launch true --scm-clean true
 
 
 # Add Credentials
 
-tower-cli credential create --name Control --organization Default --credential-type Machine --inputs='{"username":"aaa","password":"AAA"}'
-tower-cli credential create --name "EC2" --organization Default --credential-type "Amazon Web Services" --inputs='{"username":"ccc","password":"CCC"}'
-tower-cli credential create --name Windows --organization Default --credential-type Machine --inputs='{"username":"ddd","password":"DDD"}'
-tower-cli credential create --name ServiceNow --organization Default --credential-type ServiceNow --inputs='{"username":"eee","password":"EEE","instance":"EEEE"}'
-tower-cli credential create --name ec2-key --organization Default --credential-type Machine --inputs='{"username":"fff","password":"FFF"}'
-tower-cli credential create --name cisco --organization Default --credential-type Network --inputs='{"username":"student1","password":"GGG"}'
-tower-cli credential create --name juniper --organization Default --credential-type Network --inputs='{"username":"student1","password":"HHH"}'
+tower-cli credential create --name Control --organization Default --credential-type Machine --inputs='{"username":"student1","password":"ansible"}'
+tower-cli credential create --name Cisco --organization Default --credential-type Network --inputs='{"username":"ec2-user","password":"aaa"}'
+tower-cli credential create --name Juniper --organization Default --credential-type Network --inputs='{"username":"jnpr","password":"aaa"}'
 
-
+# Azure Inventory Script
 
 # create inventories
 tower-cli inventory create --name Network --organization Default
 sudo tower-manage inventory_import --source=/home/student1/networking-workshop/lab_inventory/hosts  --inventory-name="Network"
-tower-cli inventory create --name AWS --organization Default
-tower-cli inventory_source create --name "AWS-EC2" --inventory "AWS" --source ec2 --credential "EC2" --update-on-launch "true"
-
-
 
 # Create Templates
-tower-cli job_template create --name Windows-EC2-Create --job-type run --inventory AWS --project Windows --playbook Windows_EC2/AWS-Windows-Create.yml --credential EC2 --credential 1
-tower-cli job_template create --name Windows-EC2-Delete --job-type run --inventory AWS --project Windows --playbook Windows_EC2/AWS-Windows-Destroy.yml --credential EC2 --credential 1
-tower-cli job_template create --name Windows-EC2-AD-Install --job-type run --inventory AWS --project Windows --playbook Windows_EC2/AWS-WIndows_AD_Install.yml --credential Windows
-tower-cli job_template create --name Windows-EC2-AD-Users --job-type run --inventory AWS --project Windows --playbook Windows_EC2/AWS-Windows_AD-Users.yml --credential Windows
-tower-cli job_template create --name Windows-EC2-SSH-Server --job-type run --inventory AWS --project Windows --playbook Windows_EC2/AWS-Windows_SSH_Server.yml --credential Windows
-tower-cli job_template create --name Network-Backup-Cisco --job-type run --inventory AWS --project Networks --playbook Backup_IOS.yml --credential cisco --credential 1
-tower-cli job_template create --name Network-Backup-Juniper --job-type run --inventory AWS --project Networks --playbook Backup_Junos.yml --credential juniper --credential 1
-tower-cli job_template create --name ServiceNow-EC2-Fail --job-type run --inventory 1 --project ServiceNow --playbook Demo-Snow-EC2-Fail.yml --credential ServiceNow --credential 1
-tower-cli job_template create --name ServiceNow-AD-Fail --job-type run --inventory 1 --project ServiceNow --playbook Demo-Snow-AD-Fail.yml --credential ServiceNow --credential 1
-tower-cli job_template create --name ServiceNow-NetFail --job-type run --inventory 1 --project ServiceNow --playbook Demo-Snow-NetFail.yml --credential ServiceNow --credential 1
-tower-cli job_template create --name ServiceNow-EC2Pass --job-type run --inventory 1 --project ServiceNow --playbook Demo-Snow-NetPass.yml --credential ServiceNow --credential 1
-tower-cli job_template create --name Triple-Linux-Create --job-type run --inventory AWS --project Triple-Linux --playbook Create.yml --tags create --credential ec2-key
-
-
-# Configure Teams
-
-tower-cli team create -n Windows --organization 1 
-tower-cli team create -n Networks --organization 1 
-tower-cli user create --username jwindow --password Redhat@123 --email jwindow@windows.net --first-name John --last-name Window 
-tower-cli user create --username jnetwork --password Redhat@123 --email jnetwork@cisco.net --first-name Jim --last-name Network 
-tower-cli team associate --team Windows --user jwindow
-tower-cli team associate --team Network --user jnetwork
-
-
+tower-cli job_template create --name Network-IOS-Backup --job-type run --inventory Network --project Networks --playbook Network_IOS_Backup.yml --credential Cisco --credential 1
+tower-cli job_template create --name Network-IOS-Restore --job-type run --inventory Network --project Networks --playbook Network-IOS-Restore.yml --credential Cisco --credential 1
+tower-cli job_template create --name Network-IOS-Config-GRE --job-type run --inventory Network --project Networks --playbook Network_IOS_Config_GRE.yml --credential Cisco --credential 1
+tower-cli job_template create --name Network-Junos-Backup --job-type run --inventory Network --project Networks --playbook Network_Junos_Backup.yml --credential Juniper --credential 1
 
 
 

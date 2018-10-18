@@ -1,5 +1,4 @@
 . /var/lib/awx/venv/ansible/bin/activate
 pip install --upgrade pip
 pip install ansible-tower-cli
-pip install pysnow
 pip install ncclient

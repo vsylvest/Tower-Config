@@ -46,37 +46,6 @@
     group: awx
     mode: 0755 
 
-
-- name: Get ServiceNow Credential Injector
-  get_url: 
-    url: https://raw.githubusercontent.com/vsylvest/Tower-Config/master/roles/tower/files/ServiceNow_Cred_Inject.yml
-    dest: /home/student1/ServiceNow_Cred_Inject.yml
-    owner: awx
-    group: awx
-    mode: 0755 
-    
-- name: Get ServiceNow Credential Input
-  get_url: 
-    url: https://raw.githubusercontent.com/vsylvest/Tower-Config/master/roles/tower/files/ServiceNow_Cred_Input.yml
-    dest: /home/student1/ServiceNow_Cred_Input.yml
-    owner: awx
-    group: awx
-    mode: 0755 
-
-
-- name: place private ssh key file
-  get_url: 
-    url: https://raw.githubusercontent.com/vsylvest/Tower-Config/master/roles/tower/files/windows-key
-    dest: /var/lib/awx/venv/ansible/id_rsa
-    owner: awx
-    group: awx
-    mode: 0400 
-
-
-- name: place private ssh key file
-  get_url: 
-    url: https://raw.githubusercontent.com/vsylvest/Tower-Config/master/roles/tower/files/windows-key-pub
-    dest: /var/lib/awx/venv/ansible/id_rsa.pub
-    owner: awx
-    group: awx
-    mode: 0400 
+- name: Configure Tower
+  shell: /home/student1/./configure_tower.sh
+  ignore_errors: yes

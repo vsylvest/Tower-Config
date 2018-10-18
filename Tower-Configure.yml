@@ -1,6 +1,6 @@
 ---
 - name: Configure Ansible Tower Demo
   hosts: 
-    - tag_Name_linklight_student1_ansible
+    - tag_Workshop_ansible
   roles:
     - tower
